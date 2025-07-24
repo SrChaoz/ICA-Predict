@@ -1,5 +1,5 @@
-# Usa la imagen oficial de Node.js versión 18 como imagen base
-FROM node:18
+# Usa la imagen oficial de Node.js versión 20 LTS Alpine como imagen base
+FROM node:22-alpine
 
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /usr/src/app

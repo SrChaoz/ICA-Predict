@@ -1,5 +1,5 @@
 # Etapa de construcción
-FROM node:18 AS build
+FROM node:22-alpine AS build
 
 # Establece el directorio de trabajo
 WORKDIR /usr/src/app
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Etapa de producción
-FROM nginx:stable-alpine
+FROM nginx:alpine
 
 # Copia los archivos construidos al directorio de Nginx
 COPY --from=build /usr/src/app/build /usr/share/nginx/html

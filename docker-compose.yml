@@ -1,10 +1,14 @@
 version: '3.8'
 
+name: ica-predict
+
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: ica-predict/backend:latest
+    container_name: ica-predict-backend
     ports:
       - "3000:3000"
     volumes:
@@ -25,10 +29,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: ica-predict/frontend:latest
+    container_name: ica-predict-frontend
     ports:
       - "8080:80"
-    volumes:
-      - ./frontend:/usr/src/app
     environment:
       - REACT_APP_API_URL=http://localhost:3000
       - VITE_API_URL=http://backend:3000
@@ -37,6 +41,8 @@ services:
     build:
       context: ./model
       dockerfile: Dockerfile
+    image: ica-predict/model:latest
+    container_name: ica-predict-model
     ports:
       - "5000:5000"
     volumes:
@@ -53,6 +59,7 @@ services:
 
   db:
     image: postgres:latest
+    container_name: ica-predict-db
     ports:
       - "5433:5432"
     environment:
@@ -60,10 +67,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - ica_predict_db_data:/var/lib/postgresql/data
       - ./database/backups/CanalMesiasDB_26_03_2025.backup:/docker-entrypoint-initdb.d/CanalMesiasDB_26_03_2025.backup
       - ./database/init-restore.sh:/docker-entrypoint-initdb.d/init-restore.sh
 
 volumes:
-  db_data:
+  ica_predict_db_data:
     driver: local
