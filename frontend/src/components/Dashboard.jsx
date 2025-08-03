@@ -36,7 +36,7 @@ import {
   AreaChart,
   ReferenceLine
 } from 'recharts';
-import { format, subDays } from 'date-fns';
+import { subDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { PageContainer } from './ui/layout';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -46,6 +46,7 @@ import { ToastContainer } from './ui/toast-container';
 import { useToast } from '../hooks/useToast';
 import { fetchAllData } from '../services/dataService';
 import { calcularICA } from '../utils/icaCalculator';
+import { getLatestSensorData } from '../services/sensorService';
 
 const Dashboard = () => {
   const { toast, toasts, removeToast } = useToast();
@@ -153,85 +154,167 @@ const Dashboard = () => {
     loadHistoricalData();
   }, [chartPeriod]); // Remover 'toast' de las dependencias
 
-  // Simular actualización de sensores en tiempo real
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSensorData(prev => {
-        const newData = {
-          ph: {
-            ...prev.ph,
-            value: +(prev.ph.value + (Math.random() - 0.5) * 0.2).toFixed(1),
-            lastUpdate: new Date()
-          },
-          turbidez: {
-            ...prev.turbidez,
-            value: +(prev.turbidez.value + (Math.random() - 0.5) * 2).toFixed(0),
-            lastUpdate: new Date()
-          },
-          conductividad: {
-            ...prev.conductividad,
-            value: +(prev.conductividad.value + (Math.random() - 0.5) * 20).toFixed(0),
-            lastUpdate: new Date()
-          },
-          tds: {
-            ...prev.tds,
-            value: +(prev.tds.value + (Math.random() - 0.5) * 15).toFixed(0),
-            lastUpdate: new Date()
-          },
-          dureza: {
-            ...prev.dureza,
-            value: +(prev.dureza.value + (Math.random() - 0.5) * 10).toFixed(0),
-            lastUpdate: new Date()
-          },
-          color: {
-            ...prev.color,
-            value: +(prev.color.value + (Math.random() - 0.5) * 1).toFixed(1),
-            lastUpdate: new Date()
-          }
-        };
-
-        // Calcular ICA automáticamente basado en los otros parámetros
-        const parametrosParaICA = {
-          ph: newData.ph.value,
-          turbidez: newData.turbidez.value,
-          conductividad: newData.conductividad.value,
-          tds: newData.tds.value,
-          dureza: newData.dureza.value,
-          color: newData.color.value
-        };
-
-        const icaCalculado = calcularICA(parametrosParaICA);
+  // Función para cargar datos reales de sensores IoT
+  const loadSensorData = async () => {
+    try {
+      // Intentar obtener datos del sensor principal
+      const sensorResponse = await getLatestSensorData('ESP32_PRINCIPAL', 1);
+      
+      if (sensorResponse.success && sensorResponse.data.length > 0) {
+        const latestData = sensorResponse.data[0];
         
-        // Obtener clasificación del ICA
-        const getIcaClassification = (ica) => {
-          if (ica >= 85) return 'No contaminado';
-          if (ica >= 70) return 'Aceptable';
-          if (ica >= 50) return 'Poco contaminado';
-          if (ica >= 30) return 'Contaminado';
-          return 'Altamente contaminado';
-        };
+        setSensorData(prev => {
+          const newData = {
+            ph: {
+              ...prev.ph,
+                value: parseFloat(latestData.ph) || prev.ph.value,
+                lastUpdate: new Date(latestData.timestamp || latestData.created_at)
+              },
+              turbidez: {
+                ...prev.turbidez,
+                value: parseFloat(latestData.turbidez) || prev.turbidez.value,
+                lastUpdate: new Date(latestData.timestamp || latestData.created_at)
+              },
+              conductividad: {
+                ...prev.conductividad,
+                value: parseFloat(latestData.conductividad) || prev.conductividad.value,
+                lastUpdate: new Date(latestData.timestamp || latestData.created_at)
+              },
+              tds: {
+                ...prev.tds,
+                value: parseFloat(latestData.tds) || prev.tds.value,
+                lastUpdate: new Date(latestData.timestamp || latestData.created_at)
+              },
+              dureza: {
+                ...prev.dureza,
+                value: parseFloat(latestData.dureza) || prev.dureza.value,
+                lastUpdate: new Date(latestData.timestamp || latestData.created_at)
+              },
+              color: {
+                ...prev.color,
+                value: parseFloat(latestData.color) || prev.color.value,
+                lastUpdate: new Date(latestData.timestamp || latestData.created_at)
+              }
+            };
 
-        newData.ica = {
-          ...prev.ica,
-          value: icaCalculado,
-          classification: getIcaClassification(icaCalculado),
-          lastUpdate: new Date()
-        };
+            // Calcular ICA automáticamente basado en los datos del sensor
+            const parametrosParaICA = {
+              ph: newData.ph.value,
+              turbidez: newData.turbidez.value,
+              conductividad: newData.conductividad.value,
+              tds: newData.tds.value,
+              dureza: newData.dureza.value,
+              color: newData.color.value
+            };
 
-        return newData;
-      });
-    }, 30000); // Actualizar cada 30 segundos
+            const icaCalculado = calcularICA(parametrosParaICA);
+            
+            const getIcaClassification = (ica) => {
+              if (ica >= 85) return 'No contaminado';
+              if (ica >= 70) return 'Aceptable';
+              if (ica >= 50) return 'Poco contaminado';
+              if (ica >= 30) return 'Contaminado';
+              return 'Altamente contaminado';
+            };
+
+            newData.ica = {
+              ...prev.ica,
+              value: icaCalculado,
+              classification: getIcaClassification(icaCalculado),
+              lastUpdate: new Date(latestData.timestamp || latestData.created_at)
+            };
+
+            setIsOnline(true);
+            return newData;
+          });
+        } else {
+          // Si no hay datos del sensor, simular datos (modo fallback)
+          setSensorData(prev => {
+            const newData = {
+              ph: {
+                ...prev.ph,
+                value: +(prev.ph.value + (Math.random() - 0.5) * 0.2).toFixed(1),
+                lastUpdate: new Date()
+              },
+              turbidez: {
+                ...prev.turbidez,
+                value: +(prev.turbidez.value + (Math.random() - 0.5) * 2).toFixed(0),
+                lastUpdate: new Date()
+              },
+              conductividad: {
+                ...prev.conductividad,
+                value: +(prev.conductividad.value + (Math.random() - 0.5) * 20).toFixed(0),
+                lastUpdate: new Date()
+              },
+              tds: {
+                ...prev.tds,
+                value: +(prev.tds.value + (Math.random() - 0.5) * 15).toFixed(0),
+                lastUpdate: new Date()
+              },
+              dureza: {
+                ...prev.dureza,
+                value: +(prev.dureza.value + (Math.random() - 0.5) * 10).toFixed(0),
+                lastUpdate: new Date()
+              },
+              color: {
+                ...prev.color,
+                value: +(prev.color.value + (Math.random() - 0.5) * 1).toFixed(1),
+                lastUpdate: new Date()
+              }
+            };
+
+            // Calcular ICA con datos simulados
+            const parametrosParaICA = {
+              ph: newData.ph.value,
+              turbidez: newData.turbidez.value,
+              conductividad: newData.conductividad.value,
+              tds: newData.tds.value,
+              dureza: newData.dureza.value,
+              color: newData.color.value
+            };
+
+            const icaCalculado = calcularICA(parametrosParaICA);
+            
+            const getIcaClassification = (ica) => {
+              if (ica >= 85) return 'No contaminado';
+              if (ica >= 70) return 'Aceptable';
+              if (ica >= 50) return 'Poco contaminado';
+              if (ica >= 30) return 'Contaminado';
+              return 'Altamente contaminado';
+            };
+
+            newData.ica = {
+              ...prev.ica,
+              value: icaCalculado,
+              classification: getIcaClassification(icaCalculado),
+              lastUpdate: new Date()
+            };
+
+            setIsOnline(false); // Marcar como sin conexión si no hay datos reales
+            return newData;
+          });
+        }
+      } catch (error) {
+        console.error('Error cargando datos de sensores:', error);
+        setIsOnline(false);
+      }
+    };
+
+  // Función para actualización manual con toast
+  const handleManualRefresh = async () => {
+    await loadSensorData();
+    toast.success('✅ Datos actualizados desde ESP8266');
+  };
+
+  // useEffect para cargar datos automáticamente
+  useEffect(() => {
+    // Cargar datos inicialmente
+    loadSensorData();
+
+    // Actualizar cada 30 segundos
+    const interval = setInterval(loadSensorData, 30000);
 
     return () => clearInterval(interval);
-  }, []);
-
-  // Simular conexión intermitente del ESP32
-  useEffect(() => {
-    const connectionInterval = setInterval(() => {
-      setIsOnline(Math.random() > 0.1); // 90% uptime
-    }, 60000); // Verificar cada minuto
-
-    return () => clearInterval(connectionInterval);
   }, []);
 
   // Filtrar datos por período
@@ -427,7 +510,7 @@ const Dashboard = () => {
               variant="outline" 
               className={isOnline 
                 ? 'text-green-600 bg-green-50 border-green-200' 
-                : 'text-red-600 bg-red-50 border-red-200'
+                : 'text-orange-600 bg-orange-50 border-orange-200'
               }
             >
               {isOnline ? (
@@ -442,15 +525,17 @@ const Dashboard = () => {
                 </>
               )}
             </Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => toast.success('Datos actualizados')}
-              className="flex items-center space-x-2"
-            >
-              <RefreshCw className="h-4 w-4" />
-              <span>Actualizar</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleManualRefresh}
+                className="flex items-center space-x-2"
+              >
+                <RefreshCw className="h-4 w-4" />
+                <span>Actualizar</span>
+              </Button>
+            </div>
           </div>
         </div>
 

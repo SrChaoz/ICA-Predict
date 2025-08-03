@@ -21,6 +21,7 @@ const buttonVariants = cva(
         aqua: "bg-[#4c8cb4] text-white hover:bg-[#4c8cb4]/90",
         verde: "bg-[#74ab3c] text-white hover:bg-[#74ab3c]/90",
         azul: "bg-[#0464cc] text-white hover:bg-[#0464cc]/90",
+        purple: "bg-[#8b5cf6] text-white hover:bg-[#8b5cf6]/90",
       },
       size: {
         default: "h-10 px-4 py-2",

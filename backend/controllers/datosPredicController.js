@@ -1,53 +1,49 @@
-const pool = require('../config/dbConfig');
+const db = require('../services/databaseService');
 
 // Guardar datos predichos
 const guardarDatosPredic = async (req, res) => {
     try {
-      const {
-        fecha,
-        ph,
-        turbidez,
-        conductividad,
-        tds,
-        dureza,
-        color,
-        ica
-      } = req.body;
-  
-      const resultado = await pool.query(
-        `SELECT insertar_datos_predic($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [fecha, ph, turbidez, conductividad, tds, dureza, color, ica]
-      );
-  
-      res.status(201).json({ mensaje: '✅ Datos insertados correctamente', resultado: resultado.rows[0] });
+        const {
+            fecha, ph, turbidez, conductividad, tds, dureza, color, ica,
+            modelo_version, confianza
+        } = req.body;
+
+        const resultado = await db.insertarDatosPrediccion({
+            fecha, ph, turbidez, conductividad, tds, dureza, color, ica,
+            modelo_version, confianza
+        });
+
+        console.log(`✅ Predicción guardada (${db.DATABASE_TYPE}):`, resultado);
+        res.status(201).json({ 
+            mensaje: '✅ Datos predichos insertados correctamente', 
+            resultado,
+            database: db.DATABASE_TYPE
+        });
     } catch (error) {
-      console.error('Error al guardar datos predichos mediante función:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
+        console.error('Error al guardar datos predichos:', error);
+        res.status(500).json({ 
+            error: 'Error interno del servidor',
+            database: db.DATABASE_TYPE
+        });
     }
-  };
-  
+};
 
 // Obtener datos con paginación y búsqueda por fecha
 const obtenerDatosPredic = async (req, res) => {
-  try {
-    const { fecha } = req.query;
+    try {
+        const { fecha } = req.query;
 
-    let query = 'SELECT * FROM datos_predic';
-    const params = [];
-
-    if (fecha) {
-      query += ' WHERE fecha = $1';
-      params.push(fecha);
+        const result = await db.obtenerDatosPredicciones(fecha);
+        
+        console.log(`✅ Predicciones obtenidas (${db.DATABASE_TYPE}): ${result.length} registros`);
+        res.json(result);
+    } catch (error) {
+        console.error('Error al obtener datos predichos:', error);
+        res.status(500).json({ 
+            error: 'Error interno del servidor',
+            database: db.DATABASE_TYPE
+        });
     }
-
-    query += ' ORDER BY fecha DESC';
-
-    const result = await pool.query(query, params);
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error al obtener datos predichos:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
-  }
 };
 
 

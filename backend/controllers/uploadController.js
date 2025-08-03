@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/dbConfig');
+const db = require('../services/databaseService');
 const upload = require('../middlewares/multerConfig');
 const csv = require('csv-parser');
 const fs = require('fs');
@@ -64,18 +64,34 @@ router.post('/api/upload', upload.single('file'), async (req, res) => {
         })
         .on('end', async () => {
             try {
+                let insertedCount = 0;
                 for (const row of rows) {
-                    await pool.query(
-                        `SELECT insertar_datos($1, $2, $3, $4, $5, $6, $7, $8)`, 
-                        [row.fecha, row.ph, row.turbidez, row.conductividad, row.tds, row.dureza, row.color, row.ica]
-                    );
+                    await db.insertarDatosCalidadAgua({
+                        fecha: row.fecha,
+                        ph: row.ph,
+                        turbidez: row.turbidez,
+                        conductividad: row.conductividad,
+                        tds: row.tds,
+                        dureza: row.dureza,
+                        color: row.color,
+                        ica: row.ica,
+                        sensor_id: 'CSV_UPLOAD'
+                    });
+                    insertedCount++;
                 }
 
-                console.log(' Inserción completa en la base de datos.');
-                res.json({ message: 'Datos subidos exitosamente.' });
+                console.log(`✅ Inserción completa en ${db.DATABASE_TYPE}: ${insertedCount} registros`);
+                res.json({ 
+                    message: 'Datos subidos exitosamente.',
+                    insertedCount,
+                    database: db.DATABASE_TYPE
+                });
             } catch (error) {
-                console.error(' Error al insertar los datos en la base de datos:', error);
-                res.status(500).json({ error: 'Error al subir los datos a la base de datos.' });
+                console.error(`❌ Error al insertar los datos en ${db.DATABASE_TYPE}:`, error);
+                res.status(500).json({ 
+                    error: 'Error al subir los datos a la base de datos.',
+                    database: db.DATABASE_TYPE
+                });
             } finally {
                 console.log(`🗑️ Eliminando el archivo temporal: ${filePath}`);
                 fs.unlinkSync(filePath);

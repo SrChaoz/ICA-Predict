@@ -9,6 +9,7 @@ export default defineConfig({
   },
   server: {
     port: 3001,
+    host: '0.0.0.0', // Exponer a la red local
     allowedHosts: ['.ngrok-free.app','all']  //  dominio de aplicación
   },
   resolve: {

@@ -6,6 +6,7 @@ import PredictionForm from "./components/PredictionForm"
 import DataUploadForm from "./components/DataUploadForm"
 import DataView from "./components/DataView"
 import DataViewAll from "./components/DataViewPredic"
+import SystemStatus from "./components/SystemStatus"
 import { Layout } from "./components/ui/layout"
 
 // Crear cliente de React Query
@@ -36,6 +37,12 @@ const AppContent = () => {
   return (
     <Layout>
       <Navbar activeTab={getActiveTab()} />
+      
+      {/* Barra de estado del sistema */}
+      <div className="bg-gray-50 border-b px-6 py-2">
+        <SystemStatus />
+      </div>
+      
       <main className="flex-1">
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
