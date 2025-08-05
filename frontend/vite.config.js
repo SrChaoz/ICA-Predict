@@ -5,7 +5,17 @@ import { fileURLToPath, URL } from 'node:url';
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: 'build', // Cambia el directorio de salida a "build"
+    outDir: 'dist', // Directorio de salida para GAE
+    sourcemap: false, // Desactivar sourcemaps en producción
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu']
+        }
+      }
+    }
   },
   server: {
     port: 3001,
@@ -18,18 +28,3 @@ export default defineConfig({
     }
   }
 });
-// import { getPrediction } from '../services/predictionService';
-//
-// const PredictionForm = () => {
-//     const [fecha, setFecha] = useState('');
-//     const [resultado, setResultado] = useState(null);
-//
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-//         try {
-//             const data = await getPrediction(fecha);
-//             setResultado(data.prediction);
-//         } catch (error) {
-//             alert('Error al obtener la predicción.');
-//         }
-//     };

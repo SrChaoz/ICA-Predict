@@ -1,0 +1,25 @@
+runtime: nodejs20
+
+service: backend
+
+env_variables:
+  NODE_ENV: production
+  DATABASE_TYPE: supabase
+  # Configura estas variables con tus credenciales de Supabase
+  SUPABASE_URL: https://cnwmrcophalcymxxxhys.supabase.co
+  SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNud21yY29waGFsY3lteHh4aHlzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mjc2MTY1OSwiZXhwIjoyMDY4MzM3NjU5fQ.-FNmrPyCI2C1zoa7QsbRk5xWjkddEDJLwfi4470Fzjc
+
+  # Estas variables se mantienen para compatibilidad pero no se usan con Supabase
+  DB_HOST: ""
+  DB_PORT: "5432"
+  DB_NAME: ""
+  DB_USER: ""
+  DB_PASSWORD: ""
+  MODEL_URL: https://model-dot-ica-predict-2025.appspot.com/predict
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 10
+  target_cpu_utilization: 0.6
+
+instance_class: F2

@@ -1,0 +1,28 @@
+runtime: nodejs20
+
+service: default
+
+env_variables:
+  NODE_ENV: production
+
+handlers:
+# Servir todos los archivos estáticos de assets
+- url: /assets/(.*)
+  static_files: dist/assets/\1
+  upload: dist/assets/.*
+
+# Servir archivos en la raíz (favicon, etc.)
+- url: /(.*\.(png|jpg|jpeg|gif|ico|svg|css|js))
+  static_files: dist/\1
+  upload: dist/.*\.(png|jpg|jpeg|gif|ico|svg|css|js)
+
+# Todas las demás rutas van al index.html (SPA routing)
+- url: /.*
+  static_files: dist/index.html
+  upload: dist/index.html
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 5
+
+instance_class: F1
