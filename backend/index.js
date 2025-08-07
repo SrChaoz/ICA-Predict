@@ -6,6 +6,7 @@ const dataController = require('./controllers/dataController');
 const uploadRoutes = require('./routes/uploadRoutes');
 const datosPredic = require('./routes/datosPredicRoutes');
 const sensorRoutes = require('./routes/sensorRoutes'); // Nueva ruta para sensores
+const authRoutes = require('./routes/authRoutes'); // Rutas de autenticación
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json()); 
 
 //Rutas
+app.use('/api/auth', authRoutes); // Rutas de autenticación
 app.use('/api/predict', predictionRoutes);
 app.use(dataController);
 app.use(uploadRoutes);

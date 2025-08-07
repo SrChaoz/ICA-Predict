@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../services/databaseService');
+const { protegerRuta } = require('../services/authService');
 
-// Ruta para recibir datos de sensores IoT (ESP32)
+// Ruta para recibir datos de sensores IoT (ESP32) - pública para sensores
 router.post('/api/sensor/data', async (req, res) => {
     try {
         const {
@@ -38,8 +39,8 @@ router.post('/api/sensor/data', async (req, res) => {
     }
 });
 
-// Ruta para obtener datos de un sensor específico
-router.get('/api/sensor/:sensorId/latest', async (req, res) => {
+// Ruta para obtener datos de un sensor específico - protegida
+router.get('/api/sensor/:sensorId/latest', protegerRuta(['operador', 'control_calidad']), async (req, res) => {
     try {
         const { sensorId } = req.params;
         const { limite = 10 } = req.query;
@@ -61,8 +62,8 @@ router.get('/api/sensor/:sensorId/latest', async (req, res) => {
     }
 });
 
-// Ruta para insertar datos procesados en calidad_agua (desde frontend)
-router.post('/api/data', async (req, res) => {
+// Ruta para insertar datos procesados en calidad_agua (desde frontend) - protegida
+router.post('/api/data', protegerRuta(['operador']), async (req, res) => {
     try {
         const {
             fecha, ph, turbidez, conductividad, tds, dureza, color, ica, sensor_id = 'MANUAL'
