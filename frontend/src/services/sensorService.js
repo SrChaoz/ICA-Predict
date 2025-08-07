@@ -8,10 +8,29 @@ import axios from 'axios';
 
 const BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
 
+// Función para obtener el token del localStorage
+const getAuthToken = () => {
+    return localStorage.getItem('token');
+};
+
 const api = axios.create({
     baseURL: BASE_URL,
     timeout: 5000, // Timeout más corto para datos en tiempo real
 });
+
+// Interceptor para incluir token de autenticación
+api.interceptors.request.use(
+    (config) => {
+        const token = getAuthToken();
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 // =====================================================
 // FUNCIONES DE SENSORES IOT

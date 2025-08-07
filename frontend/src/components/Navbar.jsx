@@ -2,18 +2,20 @@
 
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Menu, X } from "lucide-react"
+import { Menu, X, LogOut, User, Shield } from "lucide-react"
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion"
 import LogoAquaher from "../assets/icons/IconAquaher.png"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import PropTypes from "prop-types"
+import { useAuth } from "../hooks/useAuth"
 
 const Navbar = ({ activeTab }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const navigate = useNavigate()
+  const { user, logout } = useAuth()
 
   // Detectar scroll para cambiar la apariencia del navbar
   useEffect(() => {
@@ -39,14 +41,14 @@ const Navbar = ({ activeTab }) => {
 
   const navItems = [
     { 
-      to: "/dashboard", 
+      to: "/", 
       label: "Dashboard", 
       value: "dashboard", 
       icon: "📡",
       variant: "azul"
     },
     { 
-      to: "/", 
+      to: "/prediction", 
       label: "Predicción", 
       value: "prediccion", 
       icon: "🔍",
@@ -147,6 +149,41 @@ const Navbar = ({ activeTab }) => {
             </motion.div>
           </nav>
 
+          {/* Información de usuario y logout */}
+          <div className="hidden md:flex items-center space-x-3">
+            {/* Botón de Admin Panel para administradores */}
+            {user?.rol === 'admin' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/admin')}
+                className="flex items-center space-x-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+              >
+                <Shield className="h-4 w-4" />
+                <span>Admin</span>
+              </Button>
+            )}
+            
+            <div className="flex items-center space-x-2 px-3 py-1 bg-gray-50 rounded-lg">
+              <User className="h-4 w-4 text-gray-600" />
+              <span className="text-sm font-medium text-gray-700">
+                {user?.nombre || user?.username}
+              </span>
+              <span className="text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded">
+                {user?.rol}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={logout}
+              className="flex items-center space-x-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Salir</span>
+            </Button>
+          </div>
+
           {/* Botón de menú hamburguesa - solo visible en pantallas pequeñas */}
           <Button
             variant="ghost"
@@ -211,6 +248,47 @@ const Navbar = ({ activeTab }) => {
                     </Button>
                   </motion.div>
                 ))}
+                
+                {/* Información de usuario y logout en móvil */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 * navItems.length }}
+                  className="pt-4 border-t"
+                >
+                  {/* Botón de Admin Panel para administradores en móvil */}
+                  {user?.rol === 'admin' && (
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start space-x-3 h-12 text-purple-600 hover:text-purple-700 hover:bg-purple-50 mb-2"
+                      onClick={() => {
+                        closeMenu();
+                        navigate('/admin');
+                      }}
+                    >
+                      <Shield className="h-4 w-4" />
+                      <span className="font-medium">Panel de Administración</span>
+                    </Button>
+                  )}
+                  
+                  <div className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-lg mb-2">
+                    <User className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">
+                      {user?.nombre || user?.username}
+                    </span>
+                    <span className="text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded ml-auto">
+                      {user?.rol}
+                    </span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start space-x-3 h-12 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={logout}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="font-medium">Cerrar Sesión</span>
+                  </Button>
+                </motion.div>
               </div>
             </nav>
           </motion.div>
