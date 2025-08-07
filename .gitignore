@@ -1,2 +1,20 @@
 docs/
 migration-backup/
+
+# Archivos con credenciales sensibles
+*.yaml
+app.yaml
+.env
+.env.local
+.env.production
+.env.staging
+
+# Logs y archivos temporales
+*.log
+*.tmp
+node_modules/
+.DS_Store
+
+# Respaldos de base de datos
+*.backup
+*.sql.backup

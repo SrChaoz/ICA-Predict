@@ -1,0 +1,13 @@
+runtime: python311
+
+env_variables:
+  # ⚠️ IMPORTANTE: No subir este archivo con credenciales reales  
+  # Copia este archivo como app.yaml y reemplaza con tus credenciales
+  SUPABASE_URL: "TU_SUPABASE_URL_AQUI"
+  SUPABASE_SERVICE_ROLE_KEY: "TU_SUPABASE_SERVICE_ROLE_KEY_AQUI"
+
+# Configuración de Google Cloud App Engine
+automatic_scaling:
+  min_instances: 0
+  max_instances: 5
+  target_cpu_utilization: 0.6

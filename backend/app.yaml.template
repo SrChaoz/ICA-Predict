@@ -1,0 +1,16 @@
+runtime: nodejs20
+
+env_variables:
+  # ⚠️ IMPORTANTE: No subir este archivo con credenciales reales
+  # Copia este archivo como app.yaml y reemplaza con tus credenciales
+  NODE_ENV: production
+  PORT: 8080
+  SUPABASE_URL: "TU_SUPABASE_URL_AQUI"
+  SUPABASE_SERVICE_ROLE_KEY: "TU_SUPABASE_SERVICE_ROLE_KEY_AQUI"
+  JWT_SECRET: "TU_JWT_SECRET_AQUI"
+
+# Configuración de Google Cloud App Engine
+automatic_scaling:
+  min_instances: 0
+  max_instances: 10
+  target_cpu_utilization: 0.6
