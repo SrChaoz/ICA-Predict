@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 import pickle
 import pandas as pd
 import numpy as np
+import os
 from datetime import datetime
 
 # Cargar el modelo previamente entrenado
@@ -57,6 +58,15 @@ def convertir_fecha(fecha_str):
 
     return fecha_df
 
+@app.route('/', methods=['GET'])
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'message': 'Water Quality Prediction API is running',
+        'model': 'RandomForest' if modelo_rf else 'XGBoost'
+    })
+
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.json
@@ -96,4 +106,7 @@ def predict():
         return jsonify({'error': 'Error en la predicción'}), 500
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0",port=5000, debug=True)
+    # Get port from environment variable or default to 8080 for App Engine
+    port = int(os.environ.get('PORT', 8080)) #Change to 5000 for local development
+    app.run(host="0.0.0.0", port=port, debug=False)
+    

@@ -82,11 +82,11 @@ const Navbar = ({ activeTab }) => {
       "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur transition-all duration-200",
       scrolled ? "shadow-md" : "shadow-sm"
     )}>
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          {/* Logo y título - visible en todas las pantallas */}
+      <div className="container mx-auto px-2 sm:px-4 py-2 lg:py-3">
+        <div className="flex items-center justify-between gap-2 lg:gap-4">
+          {/* Logo y título - responsivo */}
           <motion.div 
-            className="flex items-center space-x-3"
+            className="flex items-center space-x-2 lg:space-x-3 flex-shrink-0"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
@@ -95,28 +95,28 @@ const Navbar = ({ activeTab }) => {
               <img 
                 src={LogoAquaher || "/placeholder.svg"} 
                 alt="Logo AquaHer" 
-                className="h-10 w-10 rounded-lg border border-border" 
+                className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg border border-border" 
               />
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-lg lg:text-2xl font-bold">
                 <span className="text-primary">ICA-</span>
                 <span className="text-secondary">Predict</span>
               </h1>
-              <p className="text-xs text-muted-foreground hidden md:block">
+              <p className="text-xs text-muted-foreground hidden lg:block">
                 Sistema de Predicción de Calidad del Agua
               </p>
             </div>
           </motion.div>
 
-          {/* Navegación para pantallas medianas y grandes */}
-          <nav className="hidden md:block">
+          {/* Navegación para pantallas medianas y grandes - más compacta */}
+          <nav className="hidden md:block flex-1 max-w-2xl mx-4 lg:mx-8">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <div className="flex space-x-2">
+              <div className="flex space-x-1 lg:space-x-2 justify-center">
                 {navItems.map((item, index) => (
                   <motion.div
                     key={item.value}
@@ -128,11 +128,12 @@ const Navbar = ({ activeTab }) => {
                       asChild
                       variant={activeTab === item.value ? item.variant : "ghost"}
                       size="sm"
-                      className="relative group"
+                      className="relative group px-2 lg:px-3"
                     >
-                      <Link to={item.to} className="flex items-center space-x-2">
+                      <Link to={item.to} className="flex items-center space-x-1 lg:space-x-2">
                         <span className="text-sm">{item.icon}</span>
-                        <span className="font-medium">{item.label}</span>
+                        <span className="font-medium text-xs lg:text-sm hidden lg:inline">{item.label}</span>
+                        <span className="font-medium text-xs lg:hidden">{item.label.split(' ')[0]}</span>
                         {activeTab === item.value && (
                           <motion.div
                             className="absolute bottom-0 left-0 right-0 h-0.5 bg-current"
@@ -150,37 +151,37 @@ const Navbar = ({ activeTab }) => {
           </nav>
 
           {/* Información de usuario y logout */}
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden md:flex items-center space-x-2 lg:space-x-3 flex-shrink-0">
             {/* Botón de Admin Panel para administradores */}
             {user?.rol === 'admin' && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => navigate('/admin')}
-                className="flex items-center space-x-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                className="flex items-center space-x-1 lg:space-x-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 px-2 lg:px-3"
               >
-                <Shield className="h-4 w-4" />
-                <span>Admin</span>
+                <Shield className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden lg:inline">Admin</span>
               </Button>
             )}
             
-            <div className="flex items-center space-x-2 px-3 py-1 bg-gray-50 rounded-lg">
-              <User className="h-4 w-4 text-gray-600" />
-              <span className="text-sm font-medium text-gray-700">
+            <div className="flex items-center space-x-2 px-2 lg:px-3 py-1 bg-gray-50 rounded-lg max-w-[200px] lg:max-w-none">
+              <User className="h-4 w-4 text-gray-600 flex-shrink-0" />
+              <span className="text-sm font-medium text-gray-700 truncate" title={user?.nombre || user?.username}>
                 {user?.nombre || user?.username}
               </span>
-              <span className="text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded">
-                {user?.rol}
+              <span className="text-xs text-gray-500 bg-gray-200 px-1 lg:px-2 py-0.5 rounded flex-shrink-0">
+                {user?.rol === 'control_calidad' ? 'QC' : user?.rol === 'operador' ? 'OP' : user?.rol === 'admin' ? 'ADM' : user?.rol}
               </span>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={logout}
-              className="flex items-center space-x-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="flex items-center space-x-1 lg:space-x-2 text-red-600 hover:text-red-700 hover:bg-red-50 px-2 lg:px-3 flex-shrink-0"
             >
-              <LogOut className="h-4 w-4" />
-              <span>Salir</span>
+              <LogOut className="h-4 w-4 flex-shrink-0" />
+              <span className="hidden lg:inline">Salir</span>
             </Button>
           </div>
 
@@ -272,13 +273,17 @@ const Navbar = ({ activeTab }) => {
                   )}
                   
                   <div className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-lg mb-2">
-                    <User className="h-4 w-4 text-gray-600" />
-                    <span className="text-sm font-medium text-gray-700">
-                      {user?.nombre || user?.username}
-                    </span>
-                    <span className="text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded ml-auto">
-                      {user?.rol}
-                    </span>
+                    <User className="h-4 w-4 text-gray-600 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-700 truncate" title={user?.nombre || user?.username}>
+                        {user?.nombre || user?.username}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Rol: {user?.rol === 'control_calidad' ? 'Control de Calidad' : 
+                               user?.rol === 'operador' ? 'Operador' : 
+                               user?.rol === 'admin' ? 'Administrador' : user?.rol}
+                      </div>
+                    </div>
                   </div>
                   <Button
                     variant="outline"
@@ -317,4 +322,3 @@ Navbar.propTypes = {
 }
 
 export default Navbar
-

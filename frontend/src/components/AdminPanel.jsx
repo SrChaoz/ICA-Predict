@@ -173,80 +173,82 @@ const AdminPanel = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header mejorado */}
+      {/* Header mejorado y responsivo */}
       <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200/50">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="p-2 bg-blue-600/10 rounded-lg">
-                <Shield className="h-6 w-6 text-blue-600" />
+        <div className="px-3 sm:px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center space-x-3 lg:space-x-4 min-w-0 flex-1">
+              <div className="p-2 bg-blue-600/10 rounded-lg flex-shrink-0">
+                <Shield className="h-5 w-5 lg:h-6 lg:w-6 text-blue-600" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg lg:text-2xl font-bold text-gray-900 truncate">
                   Panel de Administración
                 </h1>
-                <p className="text-sm text-gray-600">
+                <p className="text-xs lg:text-sm text-gray-600 hidden sm:block">
                   Gestión completa del sistema ICA-Predict
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                <Shield className="h-3 w-3 mr-1" />
-                {user?.nombre} (Admin)
+            <div className="flex items-center space-x-2 lg:space-x-3 flex-shrink-0">
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 hidden sm:flex">
+                <Shield className="h-3 w-3 mr-1 flex-shrink-0" />
+                <span className="truncate max-w-[120px] lg:max-w-none" title={user?.nombre}>
+                  {user?.nombre} (Admin)
+                </span>
               </Badge>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={goToMainApp}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-1 lg:space-x-2 px-2 lg:px-3"
               >
-                <Home className="h-4 w-4" />
-                <span>Ir al Sistema</span>
+                <Home className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Ir al Sistema</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={logout}
-                className="flex items-center space-x-2 hover:bg-red-50 hover:border-red-200 hover:text-red-700"
+                className="flex items-center space-x-1 lg:space-x-2 hover:bg-red-50 hover:border-red-200 hover:text-red-700 px-2 lg:px-3"
               >
-                <LogOut className="h-4 w-4" />
-                <span>Salir</span>
+                <LogOut className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Salir</span>
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-3 sm:px-6 py-8">
         {/* Alertas globales */}
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <AlertDescription className="break-words">{error}</AlertDescription>
           </Alert>
         )}
         
         {success && (
           <Alert className="mb-6 bg-green-50 text-green-800 border-green-200">
-            <CheckCircle className="h-4 w-4" />
-            <AlertDescription>{success}</AlertDescription>
+            <CheckCircle className="h-4 w-4 flex-shrink-0" />
+            <AlertDescription className="break-words">{success}</AlertDescription>
           </Alert>
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 bg-white/70 backdrop-blur-sm">
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Gestión de Usuarios
+            <TabsTrigger value="users" className="flex items-center gap-1 lg:gap-2 px-2 lg:px-4">
+              <Users className="h-4 w-4 flex-shrink-0" />
+              <span className="hidden sm:inline">Gestión de</span> Usuarios
             </TabsTrigger>
-            <TabsTrigger value="create" className="flex items-center gap-2">
-              <UserPlus className="h-4 w-4" />
-              Crear Usuario
+            <TabsTrigger value="create" className="flex items-center gap-1 lg:gap-2 px-2 lg:px-4">
+              <UserPlus className="h-4 w-4 flex-shrink-0" />
+              <span className="hidden sm:inline">Crear</span> Usuario
             </TabsTrigger>
-            <TabsTrigger value="system" className="flex items-center gap-2">
-              <Database className="h-4 w-4" />
-              Estado del Sistema
+            <TabsTrigger value="system" className="flex items-center gap-1 lg:gap-2 px-2 lg:px-4">
+              <Database className="h-4 w-4 flex-shrink-0" />
+              <span className="hidden sm:inline">Estado del</span> Sistema
             </TabsTrigger>
           </TabsList>
 
@@ -274,11 +276,11 @@ const AdminPanel = () => {
                         {users.map((userItem) => (
                           <div 
                             key={userItem.id} 
-                            className="flex items-center justify-between p-4 bg-white/80 rounded-lg border border-gray-200/50 hover:shadow-md transition-shadow"
+                            className="flex flex-col lg:flex-row lg:items-center justify-between p-4 bg-white/80 rounded-lg border border-gray-200/50 hover:shadow-md transition-shadow gap-4 lg:gap-0"
                           >
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-3">
-                                <div className="font-medium text-gray-900">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center gap-2 lg:gap-3 mb-2 lg:mb-0">
+                                <div className="font-medium text-gray-900 truncate" title={userItem.nombre}>
                                   {userItem.nombre}
                                 </div>
                                 <Badge variant="outline" className={getRoleBadgeColor(userItem.rol)}>
@@ -294,13 +296,19 @@ const AdminPanel = () => {
                                   {userItem.activo ? 'Activo' : 'Inactivo'}
                                 </Badge>
                               </div>
-                              <div className="text-sm text-gray-600 mt-1">
-                                <span className="font-medium">Usuario:</span> {userItem.username} | 
-                                <span className="font-medium"> Email:</span> {userItem.email || 'No especificado'} |
-                                <span className="font-medium"> Creado:</span> {new Date(userItem.fecha_creacion).toLocaleDateString('es-ES')}
+                              <div className="text-xs sm:text-sm text-gray-600 space-y-1">
+                                <div className="break-all lg:break-normal">
+                                  <span className="font-medium">Usuario:</span> {userItem.username}
+                                </div>
+                                <div className="break-all lg:break-normal">
+                                  <span className="font-medium">Email:</span> {userItem.email || 'No especificado'}
+                                </div>
+                                <div>
+                                  <span className="font-medium">Creado:</span> {new Date(userItem.fecha_creacion).toLocaleDateString('es-ES')}
+                                </div>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center justify-end lg:justify-start space-x-2 flex-shrink-0">
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -313,13 +321,15 @@ const AdminPanel = () => {
                               >
                                 {userItem.activo ? (
                                   <>
-                                    <Lock className="h-4 w-4 mr-1" />
-                                    Desactivar
+                                    <Lock className="h-4 w-4 mr-1 flex-shrink-0" />
+                                    <span className="hidden sm:inline">Desactivar</span>
+                                    <span className="sm:hidden">Des.</span>
                                   </>
                                 ) : (
                                   <>
-                                    <Unlock className="h-4 w-4 mr-1" />
-                                    Activar
+                                    <Unlock className="h-4 w-4 mr-1 flex-shrink-0" />
+                                    <span className="hidden sm:inline">Activar</span>
+                                    <span className="sm:hidden">Act.</span>
                                   </>
                                 )}
                               </Button>
@@ -345,7 +355,7 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleCreateUser} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">
                         Nombre de Usuario *
@@ -439,17 +449,18 @@ const AdminPanel = () => {
                     </div>
                   </div>
                   
-                  <div className="flex justify-end space-x-3">
+                  <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => setNewUser({ username: '', password: '', nombre: '', email: '', rol: 'operador' })}
+                      className="w-full sm:w-auto"
                     >
                       Limpiar
                     </Button>
                     <Button
                       type="submit"
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
                     >
                       <UserPlus className="h-4 w-4 mr-2" />
                       Crear Usuario

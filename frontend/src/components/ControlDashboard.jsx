@@ -452,22 +452,22 @@ const ControlDashboard = () => {
       >
         {/* Header */}
         <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200/50">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
+          <div className="px-3 sm:px-6 py-4">
+            <div className="flex items-center justify-between gap-4">
               <motion.div 
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4 }}
-                className="flex items-center space-x-4"
+                className="flex items-center space-x-3 lg:space-x-4 min-w-0 flex-1"
               >
-                <div className="p-2 bg-[#4c8cb4]/10 rounded-lg">
-                  <img src={LogoAquaher} alt="AquaHer" className="h-6 w-6" />
+                <div className="p-2 bg-[#4c8cb4]/10 rounded-lg flex-shrink-0">
+                  <img src={LogoAquaher} alt="AquaHer" className="h-5 w-5 lg:h-6 lg:w-6" />
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-lg lg:text-2xl font-bold text-gray-900 truncate">
                     Dashboard Control de Calidad
                   </h1>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs lg:text-sm text-gray-600 hidden sm:block">
                     Monitoreo de calidad del agua en tiempo real
                   </p>
                 </div>
@@ -476,40 +476,46 @@ const ControlDashboard = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
-                className="flex items-center space-x-4"
+                className="flex items-center space-x-2 lg:space-x-4 flex-shrink-0"
               >
                 <Badge 
                   variant="outline" 
                   className={isOnline 
-                    ? 'text-green-600 bg-green-50 border-green-200' 
-                    : 'text-orange-600 bg-orange-50 border-orange-200'
+                    ? 'text-green-600 bg-green-50 border-green-200 flex-shrink-0' 
+                    : 'text-orange-600 bg-orange-50 border-orange-200 flex-shrink-0'
                   }
                 >
                   {isOnline ? (
                     <>
-                      <Wifi className="h-3 w-3 mr-1" />
-                      Online
+                      <Wifi className="h-3 w-3 mr-1 flex-shrink-0" />
+                      <span className="hidden sm:inline">Online</span>
+                      <span className="sm:hidden">On</span>
                     </>
                   ) : (
                     <>
-                      <WifiOff className="h-3 w-3 mr-1" />
-                      Offline
+                      <WifiOff className="h-3 w-3 mr-1 flex-shrink-0" />
+                      <span className="hidden sm:inline">Offline</span>
+                      <span className="sm:hidden">Off</span>
                     </>
                   )}
                 </Badge>
-                <div className="flex items-center space-x-2">
-                  <User className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-700">{user?.nombre}</span>
-                  <Badge variant="secondary">{user?.rol}</Badge>
+                <div className="flex items-center space-x-2 px-2 lg:px-3 py-1 bg-gray-50 rounded-lg max-w-[200px] lg:max-w-none">
+                  <User className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                  <span className="text-sm text-gray-700 truncate" title={user?.nombre || user?.username}>
+                    {user?.nombre || user?.username}
+                  </span>
+                  <Badge variant="secondary" className="flex-shrink-0 text-xs px-1 lg:px-2">
+                    {user?.rol === 'control_calidad' ? 'QC' : user?.rol === 'operador' ? 'OP' : user?.rol === 'admin' ? 'ADM' : user?.rol}
+                  </Badge>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={logout}
-                  className="flex items-center space-x-2 hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-colors duration-200"
+                  className="flex items-center space-x-1 lg:space-x-2 hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-colors duration-200 px-2 lg:px-3 flex-shrink-0"
                 >
-                  <LogOut className="h-4 w-4" />
-                  <span>Salir</span>
+                  <LogOut className="h-4 w-4 flex-shrink-0" />
+                  <span className="hidden lg:inline">Salir</span>
                 </Button>
               </motion.div>
             </div>
